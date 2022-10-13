@@ -7,15 +7,12 @@ from watchdog.observers import Observer
 from watchdog.events import LoggingEventHandler
 
 from nn import nn
+from config import *
 import sys
-
-class_num = 10
-img_size = (16, 16)
-hidden_layer_num = 1
 
 network = [nn(img_size[0] * img_size[1], 1, "sigmoid") for _ in range(class_num)]
 for i in range(class_num):
-    network[i].read_from_file(f"usps-weights-{i}.json")
+    network[i].read_from_file(f"{weights_file_prefix}{i}.json")
 
 
 def predict(data):
