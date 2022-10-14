@@ -1,8 +1,11 @@
-import argparse
 import sys
 
-import main
-from usps import realtime_predict, train, weights_simplify, config
+if (len(sys.argv) == 1):
+    print("Use cli.py -h to get more help")
+    exit()
+
+import argparse
+from usps import config
 
 arg_parser = argparse.ArgumentParser()
 arg_parser.add_argument("--main",
@@ -36,20 +39,26 @@ arg_parser.add_argument("--pycharm",
                         help="pycharm preview mode")
 opt = arg_parser.parse_args()
 
-if (len(sys.argv) == 1):
-    print("Use cli.py -h to get more help")
-    exit()
-
 if opt.main:
+    import main
+
     main.run()
 elif opt.usps_preview or (opt.usps_preview_file_name != ""):
+    from usps import realtime_predict
+
     realtime_predict.run(opt.usps_preview_file_name, opt.pycharm)
 elif opt.usps_train:
+    from usps import train
+
     train.run(True)
 elif opt.usps_test and not opt.usps_simplify:
     print("Test accuracy:")
+    from usps import train
+
     train.run(False)
 
 if opt.usps_simplify:
+    from usps import weights_simplify
+
     weights_simplify.run()
     print("Simplifying weights finished")
