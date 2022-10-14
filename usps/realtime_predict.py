@@ -2,7 +2,6 @@ import pathlib
 import time
 
 import numpy as np
-import matplotlib.pyplot as plt
 import cv2
 from watchdog.observers import Observer
 from watchdog.events import LoggingEventHandler
@@ -33,6 +32,7 @@ def read_img_and_predict():
     img = cv2.resize(img, dsize=(config.img_size[0], config.img_size[1]), interpolation=cv2.INTER_CUBIC)
     img = 1 - (np.array(img) / 255)[:, :, 0]
     if pycharm_mode:
+        import matplotlib.pyplot as plt
         plt.imshow(img, cmap="gray")
         plt.title(f"Predict: {predict(img)}")
         plt.show()
