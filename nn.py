@@ -37,12 +37,12 @@ class nn:
         self.active_func = active_func
 
     def active(self, x):
-        if (self.active_func == "relu"):
+        if self.active_func == "relu":
             return relu(x)
         return sigmoid(x)
 
     def derivative_active(self, x):
-        if (self.active_func == "relu"):
+        if self.active_func == "relu":
             return derivative_relu(x)
         return derivative_sigmoid(x)
 
@@ -104,7 +104,7 @@ class nn:
                 self.biases[self.output_layer_bias_index] -= learn_rate * d_L_d_pred * d_pred_d_b
 
             loss = mse_loss(data_annotation_target, output_predictions)
-            if (save_file_name != ""):
+            if save_file_name != "":
                 with open(save_file_name, "w") as f:
                     json.dump({"weights": self.weights, "biases": self.biases}, f)
 
@@ -113,7 +113,7 @@ class nn:
         success = 0
         for x, output_target in tqdm(zip(data, data_annotation_target), "Test", total=sum):
             output_prediction = self.predict(x)
-            if (check_fn(output_target, output_prediction)):
+            if check_fn(output_target, output_prediction):
                 success += 1
         return success / sum
 

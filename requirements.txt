@@ -1,0 +1,8 @@
+keras==2.10.0
+matplotlib==3.6.1
+numpy==1.23.3
+opencv-python==4.6.0.66
+scikit-learn==1.1.2
+tensorflow==2.10.0
+tqdm==4.64.1
+watchdog==2.1.9
