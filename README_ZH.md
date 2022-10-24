@@ -1,6 +1,6 @@
 # **简体中文 | [English](./README.md)**
 
-这是一个与[神经网络原理讲解视频](), 相配套的项目, 演示在不使用框架的情况下, 编写简易的神经网络, 并实现手写数字识别
+这是一个与[神经网络原理讲解视频](https://www.bilibili.com/video/BV1fd4y1y7xS/), 相配套的项目, 演示在不使用框架的情况下, 编写简易的神经网络, 并实现手写数字识别
 
 该神经网络具有单层隐藏层, 单输出, 你可以在[配置文件](./usps/config.py)中调整一些参数, 以调整模型训练/简化/预览检测的设置
 
@@ -44,3 +44,6 @@ for i in range(config.class_num):
     results[i] = network[i].predict(data)
 return results.argmax()  # 这个结果从0开始, 因此需要加1才是上述的类别标注值
 ```
+
+***
+参考: https://victorzhou.com/blog/intro-to-neural-networks/
