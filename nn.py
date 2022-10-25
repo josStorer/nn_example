@@ -118,10 +118,13 @@ class nn:
         return success / sum
 
     def read_from_file(self, file_name):
-        with open(file_name, "r") as f:
-            json_obj = json.load(f)
-            self.weights = json_obj["weights"]
-            self.biases = json_obj["biases"]
+        try:
+            with open(file_name, "r") as f:
+                json_obj = json.load(f)
+                self.weights = json_obj["weights"]
+                self.biases = json_obj["biases"]
+        except Exception as e:
+            print(e)
 
     def predict(self, data):
         data_flatten = np.array(data).flatten()

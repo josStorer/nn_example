@@ -52,7 +52,6 @@ elif opt.usps_train:
 
     train.run(True)
 elif opt.usps_test and not opt.usps_simplify:
-    print("Test accuracy:")
     from usps import train
 
     train.run(False)

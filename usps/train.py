@@ -2,6 +2,7 @@ import sys
 
 import numpy as np
 from sklearn.datasets import fetch_openml
+from tqdm import tqdm
 
 from nn import nn
 from usps import config
@@ -35,7 +36,7 @@ def run(is_train):
     test_annotation_target = np.array(usps["target"][config.test_index_start:config.test_index_end]).astype(float)
     total = len(test_data)
     success = 0
-    for i in range(total):
+    for i in tqdm(range(total), "Test accuracy", total=total):
         result = predict(test_data[i])
         if result == test_annotation_target[i] - 1:
             success += 1
