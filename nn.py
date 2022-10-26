@@ -123,8 +123,13 @@ class nn:
         try:
             with open(file_name, "r") as f:
                 json_obj = json.load(f)
-                self.weights = json_obj["weights"]
-                self.biases = json_obj["biases"]
+                if (len(self.weights) == len(json_obj["weights"])) \
+                        and (len(self.biases) == len(json_obj["biases"])):
+                    self.weights = json_obj["weights"]
+                    self.biases = json_obj["biases"]
+                else:
+                    print(f"The weights shape does not match the current network - {file_name}")
+
         except Exception as e:
             print(e)
 
