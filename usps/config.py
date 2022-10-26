@@ -10,6 +10,7 @@ weights_file_prefix = f"{pathlib.Path(__file__).parent.resolve().__str__()}" \
 
 # train
 epochs = 10
+process_num = 0  # auto
 train_index = 6000
 test_index_start = 7000
 test_index_end = 8000
