@@ -13,10 +13,10 @@ import sys
 
 
 def predict(data):
-    global network
+    global networks
     results = np.zeros(config.class_num)
     for i in range(config.class_num):
-        results[i] = network[i].predict(data)
+        results[i] = networks[i].predict(data)
     return results.argmax()
 
 
@@ -68,13 +68,13 @@ class img_modified(LoggingEventHandler):
 def run(file_name="", use_pycharm=False):
     global pycharm_mode
     global img_name
-    global network
+    global networks
     global observer
     pycharm_mode = use_pycharm
     img_name = file_name if file_name != "" else config.default_img_name
-    network = [nn(config.img_size[0] * config.img_size[1], 1, "sigmoid") for _ in range(config.class_num)]
+    networks = [nn(config.img_size[0] * config.img_size[1], 1, "sigmoid") for _ in range(config.class_num)]
     for i in range(config.class_num):
-        network[i].read_from_file(f"{config.weights_file_prefix}{i}.json")
+        networks[i].read_from_file(f"{config.weights_file_prefix}{i}.json")
 
     read_img_and_predict()
     if not pycharm_mode:
