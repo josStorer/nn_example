@@ -1,5 +1,6 @@
 import json
 import math
+import os
 
 import numpy as np
 from tqdm import tqdm
@@ -105,6 +106,7 @@ class nn:
 
             loss = mse_loss(data_annotation_target, output_predictions)
             if save_file_name != "":
+                os.makedirs(os.path.dirname(save_file_name), exist_ok=True)
                 with open(save_file_name, "w") as f:
                     json.dump({"weights": self.weights, "biases": self.biases}, f)
 

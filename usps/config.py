@@ -4,9 +4,9 @@ import pathlib
 class_num = 10
 img_size = (16, 16)
 hidden_layer_num = 1
-weights_folder = "./weights/"
+weights_dir = "./weights/"
 weights_file_prefix = f"{pathlib.Path(__file__).parent.resolve().__str__()}" \
-                      f"/{weights_folder}usps-weights-h{hidden_layer_num}-class"
+                      f"/{weights_dir}usps-weights-h{hidden_layer_num}-class"
 
 # train
 epochs = 10

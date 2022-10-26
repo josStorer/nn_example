@@ -20,7 +20,7 @@ def predict(data):
     return results.argmax()
 
 
-def get_current_folder():
+def get_current_dir():
     return pathlib.Path(__file__).parent.resolve().__str__()
 
 
@@ -28,7 +28,7 @@ def read_img_and_predict():
     global img
     global img_name
     global pycharm_mode
-    img = cv2.imread(get_current_folder() + "/" + img_name)
+    img = cv2.imread(get_current_dir() + "/" + img_name)
     img = cv2.resize(img, dsize=(config.img_size[0], config.img_size[1]), interpolation=cv2.INTER_CUBIC)
     img = 1 - (np.array(img) / 255)[:, :, 0]
     if pycharm_mode:
@@ -81,7 +81,7 @@ def run(file_name="", use_pycharm=False):
         threading.Thread(target=img_show_thread).start()
 
     observer = Observer()
-    observer.schedule(img_modified(), get_current_folder())
+    observer.schedule(img_modified(), get_current_dir())
     observer.start()
 
     try:
