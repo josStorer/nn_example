@@ -1,0 +1,2165 @@
+1
+00:00:00,266 --> 00:00:03,099
+Some time ago AI painting kept appearing in my dynamic
+
+2
+00:00:03,100 --> 00:00:04,866
+ Also repeatedly on the bilibili popular
+
+3
+00:00:05,133 --> 00:00:07,766
+ Some think AI will help humans become more efficient
+
+4
+00:00:07,900 --> 00:00:09,866
+ Some people think AI is plagiarism
+
+5
+00:00:10,166 --> 00:00:12,533
+ Some people think AI will replace all walks of life
+
+6
+00:00:13,033 --> 00:00:14,866
+How AI really works
+
+7
+00:00:15,066 --> 00:00:16,166
+ To explain this problem
+
+8
+00:00:16,166 --> 00:00:18,199
+ I Wrote and open-sourced a simple neural network example of about 100 lines of code
+
+9
+00:00:18,200 --> 00:00:21,700
+without using a third-party framework
+
+10
+00:00:21,700 --> 00:00:23,733
+ Let's take a look, together, at the inner workings of AI
+
+11
+00:00:24,100 --> 00:00:27,833
+I'll start by explaining the principles of neural networks in as zero-basic and no-barrier a way as possible
+
+12
+00:00:28,166 --> 00:00:31,066
+and then form a general impression of the principle of ai painting
+
+13
+00:00:31,866 --> 00:00:34,866
+First I need to reintroduce the mathematical functions
+
+14
+00:00:35,233 --> 00:00:36,733
+ Maybe it's a little bit long and uninteresting
+
+15
+00:00:36,933 --> 00:00:38,666
+ Viewers can speed up or skip
+
+16
+00:00:38,733 --> 00:00:40,733
+Using the video subsection title to jump would be better
+
+17
+00:00:42,433 --> 00:00:44,699
+y=x+1 is a very simple function
+
+18
+00:00:44,900 --> 00:00:46,966
+ The shape is a line with a slope of 1
+
+19
+00:00:47,700 --> 00:00:49,966
+where x is the input, y is the output
+
+20
+00:00:50,633 --> 00:00:52,066
+ Given any value of x
+
+21
+00:00:52,066 --> 00:00:53,666
+ y will be the value added one
+
+22
+00:00:54,466 --> 00:00:56,433
+The function is also often written as f(x)=x+1
+
+23
+00:00:58,100 --> 00:00:59,333
+The parameters are in parentheses
+
+24
+00:00:59,533 --> 00:01:01,933
+ f can refer to the effect on the input parameters
+
+25
+00:01:02,433 --> 00:01:04,433
+ Bringing in x gives an output result
+
+26
+00:01:04,866 --> 00:01:07,666
+We may often encounter problems like this in school
+
+27
+00:01:08,166 --> 00:01:09,566
+ A water tank is draining
+
+28
+00:01:10,066 --> 00:01:11,533
+ The total amount of water is 100 liters
+
+29
+00:01:11,900 --> 00:01:13,566
+ The rate of water discharge is 4 liters per second
+
+30
+00:01:13,766 --> 00:01:15,566
+ Ask how much water is left after x seconds
+
+31
+00:01:16,533 --> 00:01:19,599
+So we list y = 100 - 4*x (0<=x<=25),
+
+32
+00:01:19,600 --> 00:01:21,533
+where x is the time consumed
+
+33
+00:01:21,933 --> 00:01:24,533
+ and y is a "predicted" output for the remaining water
+
+34
+00:01:24,766 --> 00:01:27,566
+We can give real meaning to the input and output parameters of the function
+
+35
+00:01:27,566 --> 00:01:29,166
+ thus solving realistic problems
+
+36
+00:01:29,333 --> 00:01:31,799
+A complex problem may have many parameters
+
+37
+00:01:31,800 --> 00:01:39,466
+ We can write this as f(x1,x2,x3) = x1 + 3*x2 + 4*x3^2
+
+38
+00:01:39,733 --> 00:01:41,566
+Whether it's text, image, audio
+
+39
+00:01:41,900 --> 00:01:44,033
+ These can be converted to data storage
+
+40
+00:01:44,200 --> 00:01:46,266
+ All data can be used as arguments to the function
+
+41
+00:01:46,266 --> 00:01:47,299
+ Get an output
+
+42
+00:01:47,533 --> 00:01:50,233
+For example, we want to make a simple numeric discriminant function
+
+43
+00:01:50,600 --> 00:01:52,266
+ Pass in a three-by-three matrix
+
+44
+00:01:52,533 --> 00:01:54,433
+ You can also think of it as an image
+
+45
+00:01:54,966 --> 00:01:57,433
+ Assuming that its shape must be a valid number
+
+46
+00:01:57,566 --> 00:02:00,066
+ We are asked to determine if the shape is the number 1
+
+47
+00:02:00,500 --> 00:02:01,833
+Because there are only nine squares
+
+48
+00:02:01,933 --> 00:02:04,766
+ There are only 0,1,4,7 numbers that can be accommodated
+
+49
+00:02:05,333 --> 00:02:07,333
+We note that with the matrix
+
+50
+00:02:07,333 --> 00:02:09,133
+ 0,4 is written in only one way
+
+51
+00:02:09,266 --> 00:02:12,199
+ 7 is written in 7 ways, while 1 is written in 9 ways
+
+52
+00:02:12,333 --> 00:02:14,599
+We can of course determine each of these ways of writing
+
+53
+00:02:14,666 --> 00:02:17,133
+ Only 1 needs to be checked for these nine cases
+
+54
+00:02:17,800 --> 00:02:19,400
+ But there is a pattern here
+
+55
+00:02:19,666 --> 00:02:20,466
+For example
+
+56
+00:02:20,466 --> 00:02:23,233
+ The shape of a 1 always takes up only two or three pixels
+
+57
+00:02:23,700 --> 00:02:24,800
+ For this condition
+
+58
+00:02:24,800 --> 00:02:26,866
+ We can filter out many other numbers
+
+59
+00:02:27,200 --> 00:02:29,333
+ There are only four ways to write 7 left to compete with us
+
+60
+00:02:30,100 --> 00:02:33,100
+And the way 7 is written, there must be a middle column involved
+
+61
+00:02:33,300 --> 00:02:35,066
+ And when 1 takes up three pixels
+
+62
+00:02:35,066 --> 00:02:37,033
+ There is only one way to write that takes up the middle column
+
+63
+00:02:37,033 --> 00:02:37,899
+ and is full
+
+64
+00:02:38,600 --> 00:02:45,033
+We can start by counting the total number of occupied pixels, y1=x1+x2+x3.... .x9
+
+65
+00:02:45,533 --> 00:02:47,299
+Here a coefficient matrix is hidden
+
+66
+00:02:48,333 --> 00:02:49,766
+We can construct another matrix
+
+67
+00:02:50,133 --> 00:02:51,666
+ Detecting the occupation of the middle column
+
+68
+00:02:52,466 --> 00:02:56,399
+Written as a function is y2=x2+x5+x8
+
+69
+00:02:57,033 --> 00:02:58,566
+Combining these two conditions
+
+70
+00:02:58,566 --> 00:03:00,299
+ That is, y1(total) = 2
+
+71
+00:03:00,300 --> 00:03:03,066
+or when y1=3 and y2(middle column)=3 or 0
+
+72
+00:03:03,233 --> 00:03:04,533
+ represents the shape of the number 1
+
+73
+00:03:05,133 --> 00:03:05,933
+For this description
+
+74
+00:03:05,933 --> 00:03:07,599
+ We can still list a function
+
+75
+00:03:07,666 --> 00:03:10,433
+ If z=0, then that means the condition is met
+
+76
+00:03:10,666 --> 00:03:12,366
+ The shape is the number 1
+
+77
+00:03:12,366 --> 00:03:14,266
+The 3D shape of z looks like this
+
+78
+00:03:14,600 --> 00:03:17,166
+ You can see that this function is in scope
+
+79
+00:03:17,233 --> 00:03:19,399
+ There are some intersections with the z=0 plane
+
+80
+00:03:19,400 --> 00:03:21,533
+ i.e. the conditions just mentioned for y1,y2
+
+81
+00:03:21,766 --> 00:03:23,966
+ where the line of the intersection of the two points of y1=2
+
+82
+00:03:24,133 --> 00:03:25,299
+All met with our conditions
+
+83
+00:03:25,466 --> 00:03:29,366
+ i.e. y1=2, or y1=3 and y2=3 or 0
+
+84
+00:03:29,666 --> 00:03:31,366
+We can also bring y1,y2 into
+
+85
+00:03:31,366 --> 00:03:35,399
+ We end up with a complex relationship between z and x1,x2,... .x9
+
+86
+00:03:36,666 --> 00:03:39,199
+ This is an example of a realistic problem expressed as a function
+
+87
+00:03:39,400 --> 00:03:41,433
+ Used to make a category determination on an image
+
+88
+00:03:41,700 --> 00:03:44,266
+ As we said before, whether it's text, image
+
+89
+00:03:44,266 --> 00:03:44,999
+ Audio
+
+90
+00:03:45,233 --> 00:03:47,199
+ These can be converted to data storage
+
+91
+00:03:47,400 --> 00:03:48,866
+ All of these can be used as function parameters
+
+92
+00:03:49,466 --> 00:03:51,066
+ It is also possible to output according to our target
+
+93
+00:03:51,066 --> 00:03:52,133
+ Analyze a set of laws
+
+94
+00:03:52,133 --> 00:03:53,099
+ A relational equation
+
+95
+00:03:53,500 --> 00:03:56,433
+For this previous problem we know the result
+
+96
+00:03:56,500 --> 00:03:57,933
+ Of course we can write it
+
+97
+00:03:57,933 --> 00:04:00,833
+ Draw it directly, but in reality the problem is very complicated
+
+98
+00:04:01,033 --> 00:04:03,033
+ We can hardly calculate the result manually
+
+99
+00:04:03,166 --> 00:04:06,333
+So a relatively general neural network model structure needs to be designed
+
+100
+00:04:06,600 --> 00:04:09,466
+ This unknown result is obtained by training and adjusting the parameters 
+
+101
+00:04:10,100 --> 00:04:12,700
+We can draw the two functions y1,y2 as a mesh
+
+102
+00:04:12,700 --> 00:04:13,700
+ Two layers are formed
+
+103
+00:04:14,266 --> 00:04:16,799
+The first layer is the input, which is a three-by-three image matrix
+
+104
+00:04:17,233 --> 00:04:18,433
+The second layer is the processing
+
+105
+00:04:18,466 --> 00:04:20,299
+ In a neural network it is called the hidden layer
+
+106
+00:04:20,666 --> 00:04:23,099
+ In fact, hidden layers can also have a multi-layer recursive structure
+
+107
+00:04:23,300 --> 00:04:25,233
+ to better fit more complex cases
+
+108
+00:04:25,400 --> 00:04:27,000
+ It's not just one column like this
+
+109
+00:04:27,200 --> 00:04:30,433
+But our current problem uses only one column
+(A single hidden layer can theoretically fit any function, but multiple layers perform better)
+
+110
+00:04:30,433 --> 00:04:31,333
+Here one by one cells
+
+111
+00:04:31,333 --> 00:04:32,933
+ is the neuron in the neural network
+
+112
+00:04:33,333 --> 00:04:34,399
+Connections between neurons
+
+113
+00:04:34,400 --> 00:04:36,066
+ is the coefficient matrix mentioned earlier
+
+114
+00:04:36,100 --> 00:04:37,233
+ Here it is called the weights
+
+115
+00:04:38,000 --> 00:04:39,933
+The missing third layer here, is the output
+
+116
+00:04:40,266 --> 00:04:42,666
+We want to aggregate the results of the hidden layer to the output layer
+
+117
+00:04:42,833 --> 00:04:45,533
+ The final output is the target we want the neural network to predict
+
+118
+00:04:46,600 --> 00:04:49,033
+Here, it's the z function that was mentioned earlier
+
+119
+00:04:49,900 --> 00:04:51,566
+Of course, the way we've drawn it so far
+
+120
+00:04:51,633 --> 00:04:52,533
+ You will find
+
+121
+00:04:52,600 --> 00:04:57,733
+ This "neural network" can only express like y=ax1+bx2+cx3 in the form
+
+122
+00:04:58,266 --> 00:05:00,699
+With one parameter, it is a straight line in two dimensions
+
+123
+00:05:01,033 --> 00:05:03,399
+ With two parameters, it is a plane in three-dimensional space
+
+124
+00:05:03,666 --> 00:05:05,833
+ In short, it is linear, it is "straight"
+
+125
+00:05:06,366 --> 00:05:08,566
+And the expression for z that we were going to get earlier
+
+126
+00:05:08,666 --> 00:05:10,766
+ The drawing is a surface in 3D space
+
+127
+00:05:11,333 --> 00:05:13,866
+ We can't express the surface through this network now
+
+128
+00:05:14,066 --> 00:05:15,200
+But we can switch our thinking
+
+129
+00:05:15,200 --> 00:05:17,866
+ Breaking down our goal into "straight" pieces
+
+130
+00:05:18,100 --> 00:05:20,600
+ and then combine them into the curves, surfaces we need
+
+131
+00:05:20,600 --> 00:05:23,000
+ or other non-"straight" targets in higher dimensions
+
+132
+00:05:23,700 --> 00:05:24,533
+To achieve this
+
+133
+00:05:24,533 --> 00:05:26,133
+ We need to use the activation function
+
+134
+00:05:26,600 --> 00:05:27,733
+ Examples of common activation functions
+
+135
+00:05:27,733 --> 00:05:30,300
+ sigmoid, the mathematical expression looks like this
+
+136
+00:05:30,833 --> 00:05:32,333
+The shape is like this
+
+137
+00:05:33,300 --> 00:05:36,833
+ Activation functions like sigmoid make an otherwise linear function nonlinear
+
+138
+00:05:37,033 --> 00:05:38,500
+Eventually we can do this for various inputs
+
+139
+00:05:38,500 --> 00:05:42,266
+ By simply adding and multiplying the coefficients that worked in the previous neural network
+
+140
+00:05:42,266 --> 00:05:44,800
+ Combining segments, fitting arbitrary continuous curves
+
+141
+00:05:44,800 --> 00:05:46,200
+ Expresses an arbitrary function
+
+142
+00:05:46,666 --> 00:05:48,266
+As long as your input and output targets
+
+143
+00:05:48,266 --> 00:05:50,900
+ There exists the possibility of logical functional expression
+
+144
+00:05:51,100 --> 00:05:52,566
+ so it can be written in functional form
+
+145
+00:05:52,800 --> 00:05:55,233
+ We then achieve a mathematical expression for the specific problem
+
+146
+00:05:56,533 --> 00:05:57,266
+So far
+
+147
+00:05:57,266 --> 00:06:00,500
+ We know that the actual problem can be transformed into a fixed form of mathematical equations
+
+148
+00:06:00,733 --> 00:06:02,833
+ This neural network structure can be used to infer
+
+149
+00:06:03,166 --> 00:06:04,800
+ This process is called forward propagation
+
+150
+00:06:05,000 --> 00:06:07,666
+However, in our previous numerical discrimination problem
+
+151
+00:06:07,666 --> 00:06:09,500
+ Each formula is calculated manually
+
+152
+00:06:09,500 --> 00:06:11,600
+If the individual constants in the previous calculation equation
+
+153
+00:06:11,700 --> 00:06:14,733
+ that is, the connection parameters (weights) between the neurons in the neural network,
+
+154
+00:06:14,733 --> 00:06:16,333
+ We can get the computer to compute
+
+155
+00:06:16,333 --> 00:06:18,966
+so that we can have an artificial intelligence that can automatically reason about a particular problem
+
+156
+00:06:20,000 --> 00:06:22,066
+We can start by having the individual weights randomly generated
+
+157
+00:06:22,766 --> 00:06:24,166
+ and then perform a simple test
+
+158
+00:06:24,166 --> 00:06:25,500
+ Look at the incoming input data
+
+159
+00:06:25,600 --> 00:06:27,600
+ Whether the output is what we want
+
+160
+00:06:28,200 --> 00:06:29,966
+ This result is called a prediction,
+
+161
+00:06:29,966 --> 00:06:31,133
+The abbreviation is pred
+
+162
+00:06:31,933 --> 00:06:33,266
+If it's not what we want
+
+163
+00:06:33,366 --> 00:06:35,633
+ We can see how much it differs from the result we want
+
+164
+00:06:36,166 --> 00:06:37,966
+ The result we want is the true result
+
+165
+00:06:38,233 --> 00:06:39,966
+ Write true, or target,
+
+166
+00:06:39,966 --> 00:06:43,633
+ Here you can use, for example, the mean squared error (mse) to measure the difference with the target
+
+167
+00:06:44,233 --> 00:06:47,200
+where this symbol is read as sigma, which means summation
+
+168
+00:06:47,333 --> 00:06:48,466
+ Add from 1 to n
+
+169
+00:06:49,100 --> 00:06:51,000
+Because we'll have a bunch of inputs and outputs
+
+170
+00:06:51,033 --> 00:06:52,466
+ To measure the overall difference
+
+171
+00:06:53,033 --> 00:06:54,500
+This calculation is also well understood
+
+172
+00:06:54,666 --> 00:06:56,666
+ To measure the difference we naturally think of subtraction
+
+173
+00:06:56,933 --> 00:06:58,633
+ And there is no positive or negative difference
+
+174
+00:06:58,733 --> 00:07:00,666
+ So we eliminate the negative sign by squaring
+
+175
+00:07:00,733 --> 00:07:02,933
+ Then we sum and average to get the error
+
+176
+00:07:03,166 --> 00:07:04,500
+Use the square instead of the absolute value
+
+177
+00:07:04,500 --> 00:07:05,900
+ Mainly for ease of derivation
+
+178
+00:07:06,066 --> 00:07:09,033
+ And if the error is large (greater than 1) the square can also amplify the difference
+
+179
+00:07:09,033 --> 00:07:12,100
+ Increase the adjustment. What is about the derivative?
+
+180
+00:07:12,100 --> 00:07:13,000
+ Why Derivative?
+
+181
+00:07:13,266 --> 00:07:15,633
+ And how the weights are adjusted will be explained later
+
+182
+00:07:16,833 --> 00:07:18,600
+In summary, this function for measuring differences
+
+183
+00:07:18,733 --> 00:07:20,300
+ We call it the loss function,
+
+184
+00:07:20,833 --> 00:07:22,533
+indicates the current effect compared to the target
+
+185
+00:07:22,533 --> 00:07:24,966
+ How much risk, how much loss
+
+186
+00:07:24,966 --> 00:07:26,566
+We want its value to be as small as possible
+
+187
+00:07:26,766 --> 00:07:28,433
+ means as close to the target as possible
+
+188
+00:07:28,966 --> 00:07:30,566
+e.g., yes/no
+
+189
+00:07:30,766 --> 00:07:35,099
+can be expressed as 1,0, if the AI calculates the result as 0.9
+
+190
+00:07:35,300 --> 00:07:37,000
+Although not exactly what we were aiming for
+
+191
+00:07:37,133 --> 00:07:39,300
+ But when the result is only two possible
+
+192
+00:07:39,333 --> 00:07:41,200
+ 0.9 is close to "yes"
+
+193
+00:07:41,466 --> 00:07:43,266
+ The loss function results will be small
+
+194
+00:07:43,300 --> 00:07:44,866
+meaning that we are close to the target
+
+195
+00:07:45,100 --> 00:07:47,100
+So, next, what we're going to do
+
+196
+00:07:47,100 --> 00:07:49,500
+ is to adjust the previously randomly generated weights
+
+197
+00:07:49,566 --> 00:07:52,466
+ and calculating the loss function, to keep reducing the loss
+
+198
+00:07:53,433 --> 00:07:55,466
+aimless randomness obviously doesn't work
+
+199
+00:07:55,600 --> 00:07:57,766
+ The number of participants for many real-world problems is very large
+
+200
+00:07:57,833 --> 00:07:59,466
+ We need a reliable method
+
+201
+00:08:00,500 --> 00:08:02,833
+Starting through partial derivatives is a common method
+
+202
+00:08:03,333 --> 00:08:04,633
+ What is a partial derivative?
+
+203
+00:08:05,000 --> 00:08:06,666
+ First, a line in the two-dimensional plane
+
+204
+00:08:06,666 --> 00:08:08,966
+ We know that there is a slope to describe the degree of tilt
+
+205
+00:08:09,333 --> 00:08:10,400
+If it is a curve
+
+206
+00:08:10,466 --> 00:08:12,866
+ then the slope of the curve is different at different positions
+
+207
+00:08:13,266 --> 00:08:14,933
+ We do this by taking the derivative at a particular position
+
+208
+00:08:14,933 --> 00:08:16,000
+ to calculate the slope
+
+209
+00:08:16,466 --> 00:08:18,300
+ The derivative is the slope at a specific position
+
+210
+00:08:20,000 --> 00:08:22,200
+ There are a series of mathematical methods/formulas for finding the derivative
+
+211
+00:08:22,200 --> 00:08:23,433
+ But not the point here
+
+212
+00:08:24,100 --> 00:08:25,666
+And if the number of parameters increases
+
+213
+00:08:25,733 --> 00:08:27,166
+ For example to the three-dimensional space
+
+214
+00:08:27,466 --> 00:08:29,100
+ A point on the surface has many tangents
+
+215
+00:08:29,100 --> 00:08:30,633
+ There are many different cases of "slope",
+
+216
+00:08:30,833 --> 00:08:33,433
+ We fix a surface, forming a plane curve
+
+217
+00:08:33,733 --> 00:08:36,000
+ Treating all the other variables as constants
+
+218
+00:08:36,233 --> 00:08:38,133
+ Then derive the only parameter at this point
+
+219
+00:08:38,133 --> 00:08:39,133
+ is the partial derivative
+
+220
+00:08:39,433 --> 00:08:41,233
+With partial derivative/slope
+
+221
+00:08:41,333 --> 00:08:42,466
+ What can be done about it?
+
+222
+00:08:42,866 --> 00:08:43,833
+In a neural network
+
+223
+00:08:43,866 --> 00:08:45,533
+ We substitute the individual equations layer by layer
+
+224
+00:08:45,533 --> 00:08:47,466
+ We can get a prediction and input
+
+225
+00:08:47,466 --> 00:08:48,733
+ and the relationship equation for the weights
+
+226
+00:08:49,433 --> 00:08:51,200
+The prediction results are substituted into the loss function
+
+227
+00:08:51,266 --> 00:08:53,466
+ Again, we can get the loss function with their relationship equation
+
+228
+00:08:53,733 --> 00:08:58,200
+ We can abbreviate the loss function versus the weights as L(w1,w2,...) ,
+
+229
+00:08:58,200 --> 00:08:59,833
+w is the abbreviation for weightweight
+
+230
+00:09:00,533 --> 00:09:02,433
+The actual meaning of slope is the speed of change
+
+231
+00:09:02,800 --> 00:09:06,100
+ If we find the partial derivative of each weight variable for the loss function
+
+232
+00:09:06,266 --> 00:09:07,066
+ then we can measure
+
+233
+00:09:07,066 --> 00:09:10,033
+ The effect of the individual weights on the rate of change of the loss function
+
+234
+00:09:10,466 --> 00:09:13,233
+If a weight variable poses a drastic effect on the loss function
+
+235
+00:09:13,600 --> 00:09:14,800
+ The value of the bias is large
+
+236
+00:09:14,933 --> 00:09:18,700
+ We then know that fluctuations in this weight can easily cause fluctuations in the predicted results
+
+237
+00:09:19,800 --> 00:09:20,900
+For example, an image
+
+238
+00:09:21,000 --> 00:09:24,433
+ The color of just one pixel changes due to weight fluctuations
+
+239
+00:09:24,466 --> 00:09:27,233
+ This causes the neural network to predict a dog as a cat (with fluctuating results),
+
+240
+00:09:27,233 --> 00:09:28,533
+ This is clearly not reasonable
+
+241
+00:09:29,100 --> 00:09:32,200
+This weighting variable is largely responsible for the failure of the neural network's predictions
+
+242
+00:09:32,266 --> 00:09:32,900
+ In other words
+
+243
+00:09:32,900 --> 00:09:35,200
+ We need to adjust the weights, reduce its interference
+
+244
+00:09:36,300 --> 00:09:38,533
+The way to adjust it, you can just do a simple subtraction
+
+245
+00:09:38,766 --> 00:09:40,666
+ For example, if the weight is 1, the derivative is 10
+
+246
+00:09:41,333 --> 00:09:44,200
+Direct 1-0.01*10 to get 0.9
+
+247
+00:09:44,766 --> 00:09:46,400
+By looking at the image we can find
+
+248
+00:09:46,400 --> 00:09:48,466
+ The value of the loss function goes in the lower direction
+
+249
+00:09:48,666 --> 00:09:51,100
+where 0.01 is the factor by which we fine-tune the weights
+
+250
+00:09:51,500 --> 00:09:52,500
+ Called learning rate
+
+251
+00:09:52,666 --> 00:09:54,233
+ Avoid large direct curve adjustments
+
+252
+00:09:54,266 --> 00:09:55,766
+ Causes large fluctuations in results
+
+253
+00:09:56,466 --> 00:09:58,000
+In the other case, the derivative is negative
+
+254
+00:09:58,000 --> 00:10:03,400
+ For example -10, again the rate of change is high, -1-0.01*(-10) = -0.9
+
+255
+00:10:03,533 --> 00:10:04,600
+The weights have increased
+
+256
+00:10:04,800 --> 00:10:06,600
+ The loss function also goes in the lower direction
+
+257
+00:10:07,033 --> 00:10:08,666
+Eventually, only a trough is reached
+
+258
+00:10:08,866 --> 00:10:10,433
+ At this point the rate of change is flat
+
+259
+00:10:10,800 --> 00:10:12,200
+ The weights are no longer adjusted
+
+260
+00:10:12,433 --> 00:10:14,900
+ The loss function also drops to a low point
+
+261
+00:10:14,900 --> 00:10:15,233
+Now
+
+262
+00:10:15,233 --> 00:10:17,400
+ We get the specific way to adjust the weights
+
+263
+00:10:17,633 --> 00:10:20,033
+ This method is called stochastic gradient descent
+
+264
+00:10:20,600 --> 00:10:22,466
+ where the gradient is related to the partial derivative
+
+265
+00:10:22,500 --> 00:10:23,833
+ also has geometric significance
+
+266
+00:10:23,833 --> 00:10:25,366
+ But again, not the point here
+
+267
+00:10:25,633 --> 00:10:27,166
+ Here it's just a name
+
+268
+00:10:27,466 --> 00:10:28,766
+This method works under
+
+269
+00:10:28,800 --> 00:10:31,000
+ The result of the final loss function will tend to be stable
+
+270
+00:10:32,433 --> 00:10:34,666
+The previously predicted process, called forward propagation
+
+271
+00:10:35,066 --> 00:10:37,066
+ And after the prediction is obtained, the bias is calculated
+
+272
+00:10:37,066 --> 00:10:39,600
+ and adjusting the weights in turn is called back propagation
+
+273
+00:10:41,833 --> 00:10:42,866
+With two loops like this
+
+274
+00:10:42,866 --> 00:10:46,166
+ we can keep feeding our network with all kinds of pre-prepared data
+
+275
+00:10:46,300 --> 00:10:48,966
+ Let him reason, compare the differences with the expected results
+
+276
+00:10:49,033 --> 00:10:50,733
+ 00:10:50,733 and then improve his own network weights
+
+277
+00:10:51,333 --> 00:10:53,500
+This whole process, which is the training of the neural network
+
+278
+00:10:53,600 --> 00:10:54,166
+ And finally
+
+279
+00:10:54,166 --> 00:10:56,200
+ We get a more and more definite weight
+
+280
+00:10:57,133 --> 00:10:59,366
+Of course this weight is not necessarily the optimal solution in the end
+
+281
+00:10:59,366 --> 00:10:59,766
+ For example
+
+282
+00:10:59,766 --> 00:11:02,100
+ There is a loss function associated with two input parameters
+
+283
+00:11:02,233 --> 00:11:04,266
+ Their weights are w1,w2
+
+284
+00:11:04,266 --> 00:11:06,300
+We can plot this as a 3D graph
+
+285
+00:11:06,733 --> 00:11:08,500
+It looks like this one small hill
+
+286
+00:11:09,066 --> 00:11:11,533
+ The lowest point, i.e. the one with the least loss
+
+287
+00:11:11,600 --> 00:11:14,166
+ which is the value we need for the two weights w1,w2
+
+288
+00:11:14,533 --> 00:11:16,333
+But as we did earlier by calculating the bias
+
+289
+00:11:16,333 --> 00:11:17,500
+ Random gradient descent
+
+290
+00:11:17,500 --> 00:11:19,733
+ The method of letting the loss function converge, meaning
+
+291
+00:11:19,733 --> 00:11:21,133
+ The weights we finally find
+
+292
+00:11:21,133 --> 00:11:23,033
+ Probably the bottom of the hill we expected
+
+293
+00:11:23,133 --> 00:11:24,766
+ It could also be the top of a gentle slope
+
+294
+00:11:25,100 --> 00:11:26,933
+ or the bottom of the slope which is not the closest to 0
+
+295
+00:11:26,966 --> 00:11:28,833
+These are also places where the rate of change is flat
+
+296
+00:11:28,933 --> 00:11:30,200
+ Weights are difficult to adjust
+
+297
+00:11:30,833 --> 00:11:33,000
+ This means that we find the local optimal solution
+
+298
+00:11:33,566 --> 00:11:35,366
+How to find the theoretical optimal solution as far as possible
+
+299
+00:11:35,366 --> 00:11:37,466
+ is a common problem in the field of artificial intelligence
+
+300
+00:11:37,766 --> 00:11:38,866
+ For example, introducing the impulse
+
+301
+00:11:38,866 --> 00:11:42,033
+ Accelerate or decelerate the change according to the previous change
+
+302
+00:11:42,066 --> 00:11:43,366
+ Let's fit in the process of
+
+303
+00:11:43,366 --> 00:11:45,066
+ No more staying at the local optimum
+
+304
+00:11:45,166 --> 00:11:47,033
+ 00:11:45,066 --> 00:11:47,033 but instead of sprinting over some gentle slopes
+
+305
+00:11:47,100 --> 00:11:48,566
+ 00:11:47,100 --> 00:11:48,566 over these partial best points
+
+306
+00:11:48,733 --> 00:11:50,900
+ Eventually increasing the probability of reaching the theoretical optimum
+
+307
+00:11:50,900 --> 00:11:53,966
+In a nutshell, activation function, loss function
+
+308
+00:11:53,966 --> 00:11:55,933
+ Backpropagation optimization (e.g., gradient descent to adjust weights as mentioned earlier), etc.
+
+309
+00:11:56,566 --> 00:11:57,633
+ There are various methods
+
+310
+00:11:57,633 --> 00:12:00,300
+ These are the main points of research in deep learning theory
+
+311
+00:12:00,300 --> 00:12:01,233
+All of the above knowledge
+
+312
+00:12:01,233 --> 00:12:03,600
+ is enough to write a complete neural network
+
+313
+00:12:03,600 --> 00:12:04,200
+Next
+
+314
+00:12:04,200 --> 00:12:07,433
+ I'll explain a simple neural network that I wrote using this knowledge
+
+315
+00:12:07,433 --> 00:12:09,800
+ Its open source link on github is this
+
+316
+00:12:10,033 --> 00:12:12,600
+ You can also find it in the profile or the top section of the comments section
+
+317
+00:12:12,633 --> 00:12:14,500
+Training and Inference section
+
+318
+00:12:14,533 --> 00:12:16,366
+ In the file nn.py
+
+319
+00:12:16,833 --> 00:12:18,466
+ nn is short for neural network
+
+320
+00:12:18,600 --> 00:12:19,666
+The core, which is from here
+
+321
+00:12:19,666 --> 00:12:21,966
+ Here, there are about 100 lines of code
+
+322
+00:12:22,533 --> 00:12:25,566
+First of all, the initialization, we need to provide the input
+
+323
+00:12:25,800 --> 00:12:27,500
+ For example, the number of pixels in an image
+
+324
+00:12:27,700 --> 00:12:29,900
+ Then the number of neurons in the hidden layer
+
+325
+00:12:30,400 --> 00:12:31,666
+ Then the activation function
+
+326
+00:12:32,300 --> 00:12:34,300
+ The default is to use the sigmoid just described
+
+327
+00:12:34,466 --> 00:12:37,033
+Note that each neuron can use a separate activation function
+
+328
+00:12:37,166 --> 00:12:39,533
+ Here I was lazy and used all the same
+
+329
+00:12:39,600 --> 00:12:41,000
+Then, with the initialization parameters
+
+330
+00:12:41,000 --> 00:12:42,733
+ We then determine the structure of the neural network
+
+331
+00:12:43,100 --> 00:12:43,866
+ Here
+
+332
+00:12:43,866 --> 00:12:46,233
+ Random initialization of individual weights and offsets
+
+333
+00:12:46,633 --> 00:12:50,500
+ The offset is an additional value that is added after multiplying the weight coefficients and the input
+
+334
+00:12:50,500 --> 00:12:51,500
+ but is not required
+
+335
+00:12:51,500 --> 00:12:53,500
+is to be able to translate the image of our function
+
+336
+00:12:53,500 --> 00:12:54,633
+to make it more flexible
+
+337
+00:12:54,800 --> 00:12:56,366
+followed by forward propagation
+
+338
+00:12:56,533 --> 00:12:58,966
+ hidden_layers is the output of each neuron
+
+339
+00:12:59,033 --> 00:13:01,966
+ It results in, for each of the previous weights, a concatenated accumulation
+
+340
+00:13:01,966 --> 00:13:03,566
+ Then using the activation function
+
+341
+00:13:03,733 --> 00:13:05,500
+Note that here I only used a single hidden layer
+
+342
+00:13:05,500 --> 00:13:06,466
+ instead of multiple layers
+
+343
+00:13:06,900 --> 00:13:08,533
+ So the hidden layers have been counted
+
+344
+00:13:08,533 --> 00:13:08,833
+Final
+
+345
+00:13:08,833 --> 00:13:11,400
+ We sum up the hidden layers equally cumulatively to the output
+
+346
+00:13:11,400 --> 00:13:13,866
+ An inferred result is obtained
+
+347
+00:13:13,866 --> 00:13:15,866
+The latter function is the training and backpropagation part
+
+348
+00:13:16,200 --> 00:13:18,100
+The first big loop, which is the training round
+
+349
+00:13:18,766 --> 00:13:21,166
+ We have to keep fine-tuning the weights during the training rounds
+
+350
+00:13:22,333 --> 00:13:23,233
+Second cycle
+
+351
+00:13:23,233 --> 00:13:24,766
+ It's the data from each training round
+
+352
+00:13:24,766 --> 00:13:27,066
+ to make inferences and compare the differences with the expected results
+
+353
+00:13:27,233 --> 00:13:28,533
+Where, the variable data
+
+354
+00:13:28,533 --> 00:13:30,099
+is the data we use for training
+
+355
+00:13:30,666 --> 00:13:33,033
+and the variable next to it is our expected inference target 
+
+356
+00:13:33,566 --> 00:13:35,499
+Here the d in d_L_d_pred
+
+357
+00:13:35,500 --> 00:13:36,733
+refers to the differential (it doesn't matter if you don't know the differential),
+
+358
+00:13:36,733 --> 00:13:38,766
+ L is an abbreviation for loss, that is, the loss function
+
+359
+00:13:38,766 --> 00:13:40,666
+ pred is an abbreviation for prediction
+
+360
+00:13:40,666 --> 00:13:41,400
+ i.e. prediction/extrapolation
+
+361
+00:13:41,400 --> 00:13:46,000
+ d_L_d_pred is also the derivative/rate of change of the loss function with respect to the predicted outcome
+
+362
+00:13:46,400 --> 00:13:48,200
+The loss function is not calculated directly here
+
+363
+00:13:49,100 --> 00:13:51,900
+ Here you can see the loss function mse_loss
+
+364
+00:13:51,900 --> 00:13:54,000
+is subtracted for a series of objectives and predicted outcomes
+
+365
+00:13:54,000 --> 00:13:55,666
+ Squaring, then taking the mean
+
+366
+00:13:56,333 --> 00:13:58,600
+ which is the mean squared error that we have mentioned before
+
+367
+00:13:58,800 --> 00:14:00,133
+And as we mentioned before
+
+368
+00:14:00,133 --> 00:14:01,600
+ We have to calculate the loss function
+
+369
+00:14:01,600 --> 00:14:02,433
+ Take the derivative
+
+370
+00:14:02,533 --> 00:14:05,266
+ Then adjust the weights to stabilize the loss
+
+371
+00:14:05,600 --> 00:14:06,100
+ So
+
+372
+00:14:06,100 --> 00:14:08,333
+ The loss function is a part of the final functional equation
+
+373
+00:14:08,700 --> 00:14:09,866
+ So in this program
+
+374
+00:14:10,100 --> 00:14:12,133
+ we directly calculate the derivative of the mean squared error
+
+375
+00:14:12,266 --> 00:14:18,500
+ Here the direct use of high school knowledge of derivatives gives the result as
+-2 * (output_target - output_prediction)
+
+376
+00:14:18,500 --> 00:14:20,900
+The next series of variables of the form d_x_d_y
+
+377
+00:14:20,900 --> 00:14:23,166
+ are the derivatives for each connected part of the neural network
+
+378
+00:14:23,333 --> 00:14:24,266
+And here are some abbreviations
+
+379
+00:14:24,533 --> 00:14:27,333
+ For example, w refers to the weight weight, and hl for example
+
+380
+00:14:27,333 --> 00:14:29,366
+refers to the hidden layer
+
+381
+00:14:30,000 --> 00:14:32,000
+The specific formula method is not explained here
+
+382
+00:14:32,466 --> 00:14:34,400
+ The program uses all the knowledge from high school
+
+383
+00:14:34,700 --> 00:14:36,366
+Finally, the adjustment of the weights
+
+384
+00:14:36,533 --> 00:14:38,433
+ including the learn_rate here
+
+385
+00:14:38,533 --> 00:14:39,633
+ As already mentioned
+
+386
+00:14:39,800 --> 00:14:41,466
+The final loss function value calculated again
+
+387
+00:14:41,466 --> 00:14:43,000
+ Just for display to the screen
+
+388
+00:14:43,000 --> 00:14:44,866
+ For trainers to view
+
+389
+00:14:44,866 --> 00:14:47,333
+That's the entire logic of the simple neural network program
+
+390
+00:14:48,233 --> 00:14:50,666
+Inside main.py is a concrete example of simple usage
+
+391
+00:14:50,900 --> 00:14:52,600
+ Here we use four 3x3 matrices
+
+392
+00:14:52,700 --> 00:14:55,333
+ The shapes are 0, 1, 4, 7
+
+393
+00:14:55,466 --> 00:14:57,633
+This is our example, as input
+
+394
+00:14:58,400 --> 00:14:59,666
+Then set their expected target
+
+395
+00:14:59,766 --> 00:15:01,099
+i.e. 0, 1, 4, 7
+
+396
+00:15:01,400 --> 00:15:03,233
+Here the target is also divided by 10
+
+397
+00:15:03,333 --> 00:15:05,366
+is to normalize all our data
+
+398
+00:15:05,400 --> 00:15:06,966
+ Distributed between 0 and 1
+
+399
+00:15:07,300 --> 00:15:10,100
+ Because our weights will be initialized to a very small range of values
+
+400
+00:15:10,300 --> 00:15:12,300
+The amount of adjustment of the weights is also a small fine adjustment
+
+401
+00:15:12,733 --> 00:15:14,100
+ If we have a large input
+
+402
+00:15:14,133 --> 00:15:16,400
+ After the activation function, the value is still large
+
+403
+00:15:16,666 --> 00:15:17,966
+ The final prediction is huge
+
+404
+00:15:17,966 --> 00:15:19,433
+ The derivative is still large
+
+405
+00:15:19,566 --> 00:15:21,600
+ which in turn causes the weights to be updated significantly
+
+406
+00:15:21,733 --> 00:15:22,633
+ Dramatic fluctuations
+
+407
+00:15:23,433 --> 00:15:26,300
+If the weights are randomly very large or very small negative numbers at the beginning
+
+408
+00:15:26,400 --> 00:15:27,733
+ will face the same problem
+
+409
+00:15:27,966 --> 00:15:29,500
+ This problem is called gradient explosion
+
+410
+00:15:29,600 --> 00:15:31,966
+Normalization allows our model to better fit the target
+
+411
+00:15:31,966 --> 00:15:33,300
+ and avoid gradient explosion
+
+412
+00:15:34,300 --> 00:15:35,000
+Anyway, finally
+
+413
+00:15:35,000 --> 00:15:36,866
+ We create the previously written neural network
+
+414
+00:15:36,866 --> 00:15:38,333
+ The input is a 3x3 matrix
+
+415
+00:15:38,333 --> 00:15:39,833
+ The hidden layer has 9 neurons
+
+416
+00:15:39,933 --> 00:15:42,366
+ Then training, incoming data and target
+
+417
+00:15:43,266 --> 00:15:44,866
+After training, then prediction
+
+418
+00:15:45,066 --> 00:15:47,533
+ The prediction is implemented by calling the forward propagation
+
+419
+00:15:48,866 --> 00:15:50,333
+ You can see that the prediction is successful
+
+420
+00:15:50,500 --> 00:15:52,733
+ You can also adjust the number of hidden layer neurons yourself
+
+421
+00:15:52,733 --> 00:15:54,133
+ And look at the success rate of the prediction
+
+422
+00:15:54,800 --> 00:15:56,000
+Of course, there is very little data here
+
+423
+00:15:56,000 --> 00:15:57,433
+ There is an overfitting problem
+
+424
+00:15:57,600 --> 00:16:00,933
+ That is, this neural network will become only for this data and result
+
+425
+00:16:01,400 --> 00:16:03,100
+And, here the data is used for both training
+
+426
+00:16:03,100 --> 00:16:05,066
+ and also for testing, is not appropriate
+
+427
+00:16:05,133 --> 00:16:06,000
+ Even if all succeed
+
+428
+00:16:06,000 --> 00:16:08,166
+ We also don't know how well it works for other data
+
+429
+00:16:09,500 --> 00:16:11,200
+Next, there is the advanced part
+
+430
+00:16:11,733 --> 00:16:13,800
+ How to recognize human handwritten numbers?
+
+431
+00:16:14,700 --> 00:16:16,300
+If you train directly with this network
+
+432
+00:16:16,300 --> 00:16:18,966
+ trying to get it to be able to judge 0-9 in one breath you would find
+
+433
+00:16:18,966 --> 00:16:21,133
+ In the end the neural network always outputs a number
+
+434
+00:16:21,133 --> 00:16:22,533
+This is because, mindless guessing
+
+435
+00:16:22,533 --> 00:16:24,133
+ Or just output the same number
+
+436
+00:16:24,166 --> 00:16:25,500
+ The final success rate is 10%,
+
+437
+00:16:26,300 --> 00:16:28,300
+The final mean square error is converging
+
+438
+00:16:28,300 --> 00:16:29,900
+ The loss function is stable
+
+439
+00:16:30,333 --> 00:16:31,733
+ Meets our design objective
+
+440
+00:16:31,733 --> 00:16:34,133
+That is, the AI swings badly, within our rules
+
+441
+00:16:34,133 --> 00:16:35,233
+ Get the guarantee and leave
+
+442
+00:16:35,466 --> 00:16:36,566
+Actually, the handwritten numbers
+
+443
+00:16:36,566 --> 00:16:39,733
+ The situation is very complicated, for example, the numbers 1 and 7 are very similar
+
+444
+00:16:39,933 --> 00:16:42,833
+ 3 is similar to 5, 6 is similar to 9
+
+445
+00:16:43,166 --> 00:16:45,033
+ Sometimes humans can't always tell the difference
+
+446
+00:16:45,266 --> 00:16:46,066
+ For ai
+
+447
+00:16:46,066 --> 00:16:48,900
+ Output 0.1 and 0.7, which is too big a difference
+
+448
+00:16:49,033 --> 00:16:50,600
+ The difference in weight needed is huge
+
+449
+00:16:50,800 --> 00:16:53,600
+ But in fact the two cases are similar for us
+
+450
+00:16:53,733 --> 00:16:54,966
+ That's a tough one.
+
+451
+00:16:55,900 --> 00:16:57,533
+So, we need to change our thinking
+
+452
+00:16:57,833 --> 00:16:59,533
+ For example, we can use ten neural networks
+
+453
+00:16:59,700 --> 00:17:01,633
+ Each network only judges one number
+
+454
+00:17:01,900 --> 00:17:03,866
+ For example, to determine if the number is 5 only
+
+455
+00:17:03,900 --> 00:17:05,100
+Either yes or no
+
+456
+00:17:05,400 --> 00:17:06,666
+We write a number by hand
+
+457
+00:17:06,800 --> 00:17:08,100
+ Ten networks working together
+
+458
+00:17:08,100 --> 00:17:08,600
+ Finally
+
+459
+00:17:08,600 --> 00:17:12,033
+ See which network has the highest probability of being yes (result closest to 1),
+
+460
+00:17:12,300 --> 00:17:14,666
+We will consider the neural network to be judging this number
+
+461
+00:17:14,666 --> 00:17:17,066
+In the usps folder
+
+462
+00:17:17,066 --> 00:17:18,433
+ train.py in this file
+
+463
+00:17:18,433 --> 00:17:21,833
+ I trained the handwritten data of usps with this method
+
+464
+00:17:21,833 --> 00:17:24,000
+ and used only a single neuron hidden layer
+
+465
+00:17:24,533 --> 00:17:26,600
+ The final test accuracy is close to 90%
+
+466
+00:17:27,166 --> 00:17:28,866
+I made some simplifications to the weights
+
+467
+00:17:29,033 --> 00:17:30,266
+ Only the integer part is kept
+
+468
+00:17:30,266 --> 00:17:31,933
+ The accuracy is still 87%,
+
+469
+00:17:32,400 --> 00:17:34,866
+ There is also a lot of research in the field of deep learning on model tailoring
+
+470
+00:17:34,866 --> 00:17:37,100
+ My simplification is very crude in this way
+
+471
+00:17:37,300 --> 00:17:40,200
+After saving the weights as a json file, you can see that
+
+472
+00:17:40,266 --> 00:17:41,966
+ There is only a tiny bit of this number here
+
+473
+00:17:42,166 --> 00:17:44,966
+ After compressing the 10 network weights, the volume is only about 1kb
+
+474
+00:17:44,966 --> 00:17:46,433
+Not even a regular image
+
+475
+00:17:46,433 --> 00:17:49,433
+ This achieves a very rough handwritten number recognition
+
+476
+00:17:49,433 --> 00:17:51,100
+Of course, this neural network is very simple
+
+477
+00:17:51,133 --> 00:17:52,233
+There is only one hidden layer
+
+478
+00:17:52,233 --> 00:17:54,766
+ And there's a lot of deep learning field methods that are not applied
+
+479
+00:17:55,133 --> 00:17:57,033
+For example, fast training of multiple batch inputs
+
+480
+00:17:57,066 --> 00:17:59,066
+More efficient convolution operations for image processing
+
+481
+00:17:59,466 --> 00:18:01,133
+Pooling operation for compressed features
+
+482
+00:18:01,200 --> 00:18:05,566
+ Softmax activation functions and cross-entropy loss functions that are more efficient for classification problems
+
+483
+00:18:06,100 --> 00:18:10,133
+Common neural networks are able to achieve over 99% accuracy for this kind of number detection
+
+484
+00:18:10,333 --> 00:18:12,900
+If you are interested, you can also do your own search based on keywords
+
+485
+00:18:12,933 --> 00:18:13,800
+In addition to the categories
+
+486
+00:18:13,800 --> 00:18:16,700
+ The output can also be, for example, an x-axis or y-axis coordinate
+
+487
+00:18:16,766 --> 00:18:19,066
+ Width, height of an object form
+
+488
+00:18:19,300 --> 00:18:20,466
+ These combined
+
+489
+00:18:20,466 --> 00:18:21,700
+ and it becomes the target detection
+
+490
+00:18:21,933 --> 00:18:24,066
+ Neural networks can do a lot more than that.
+
+491
+00:18:24,500 --> 00:18:26,300
+However, neural networks are not a panacea
+
+492
+00:18:26,533 --> 00:18:28,833
+Not everything can be fitted by being as complex as possible
+
+493
+00:18:29,266 --> 00:18:31,133
+What neural networks can fit, just functions
+
+494
+00:18:31,300 --> 00:18:33,066
+ The set output is not optional either
+
+495
+00:18:33,300 --> 00:18:35,100
+Instead, a logical level of possibility is required
+
+496
+00:18:36,033 --> 00:18:37,166
+I believe that everyone who is reading this
+
+497
+00:18:37,166 --> 00:18:38,766
+ How neural networks work, the details
+
+498
+00:18:38,766 --> 00:18:40,566
+00:18:38,766 --> 00:18:40,566 There's already a fairly concrete understanding
+
+499
+00:18:41,466 --> 00:18:45,266
+Neural networks are really like regular summaries based on your data and goals
+
+500
+00:18:45,766 --> 00:18:47,166
+ You have to design the right network model
+
+501
+00:18:47,166 --> 00:18:48,233
+ Using various techniques
+
+502
+00:18:48,233 --> 00:18:50,033
+ Find this expected pattern as much as possible
+
+503
+00:18:50,033 --> 00:18:54,966
+If there are logically possible mathematical expressions for the inputs and outputs you envision, theoretically you can fit
+
+504
+00:18:56,133 --> 00:18:57,300
+If you can understand the brain
+
+505
+00:18:57,300 --> 00:19:04,266
+the workings of various cells, digitizing every cell, atom, and digitizing the entire planet, maybe we could see the future.
+
+506
+00:19:05,500 --> 00:19:07,233
+And finally, about AI painting
+
+507
+00:19:08,033 --> 00:19:09,433
+ ai is summarizing the laws
+
+508
+00:19:09,466 --> 00:19:13,400
+There is no thought per se, ai painting does not carry out a common understanding of copying and stitching
+
+509
+00:19:13,800 --> 00:19:15,766
+But there may be stitches in the regular set
+
+510
+00:19:16,600 --> 00:19:18,633
+00:19:16,600 --> 00:19:18,633 If we want to use a human well understood way
+
+511
+00:19:18,700 --> 00:19:19,500
+ Similar to
+
+512
+00:19:19,600 --> 00:19:22,066
+ What the incoming tags represent roughly
+
+513
+00:19:22,400 --> 00:19:23,666
+ This leg looks like this
+
+514
+00:19:23,666 --> 00:19:26,766
+ The next part of the texture should be drawn like this or like that
+
+515
+00:19:26,866 --> 00:19:27,766
+ And this pattern
+
+516
+00:19:27,766 --> 00:19:30,266
+ does originate from the work of painters whose AI is used as data
+
+517
+00:19:30,400 --> 00:19:32,100
+ but obtained by AI analysis training
+
+518
+00:19:32,466 --> 00:19:33,066
+In addition
+
+519
+00:19:33,066 --> 00:19:35,266
+ If you give the data and the goal is to plagiarize
+
+520
+00:19:35,366 --> 00:19:36,933
+then ai will do the same
+
+521
+00:19:37,100 --> 00:19:39,166
+So you might see ai directly along with the composition
+
+522
+00:19:39,166 --> 00:19:40,700
+The case where the painting style is imitated together
+
+523
+00:19:41,566 --> 00:19:42,466
+For the future
+
+524
+00:19:42,600 --> 00:19:44,700
+ After the AI has trained an initial result
+
+525
+00:19:44,700 --> 00:19:47,100
+ It is possible to make targeted adjustments based on human preferences
+
+526
+00:19:47,133 --> 00:19:48,266
+ Set evolutionary direction
+
+527
+00:19:48,500 --> 00:19:50,733
+ For example, how does this drawing look better to the public?
+
+528
+00:19:50,966 --> 00:19:53,166
+ The developer can adjust the training data accordingly
+
+529
+00:19:53,300 --> 00:19:55,366
+ Retaining pleasing data, further deepening
+
+530
+00:19:55,800 --> 00:19:57,733
+ Maybe it will gradually develop its own style
+
+531
+00:19:57,966 --> 00:20:00,133
+ That is, summarize the laws of popular preference
+
+532
+00:20:00,833 --> 00:20:04,699
+ The complete body, which is the equivalent of thousands of people constantly picking at the painting and adjusting it
+
+533
+00:20:04,700 --> 00:20:05,600
+ The result
+
+534
+00:20:05,600 --> 00:20:08,066
+ I think it's bound to have a huge impact on the related industries
+
+535
+00:20:08,266 --> 00:20:11,466
+But I also believe that ai can bring more possibilities for human beings
+
+536
+00:20:11,633 --> 00:20:12,900
+After all, the development of technology
+
+537
+00:20:12,900 --> 00:20:14,900
+did lead to a better life for mankind
+
+538
+00:20:15,066 --> 00:20:16,733
+And the never-ending curiosity of mankind
+
+539
+00:20:16,733 --> 00:20:18,633
+ Understanding and experimenting with the unknown
+
+540
+00:20:18,633 --> 00:20:20,300
+ is something that AI can never replace
+
+541
+00:20:21,100 --> 00:20:23,766
+What humans will eventually do, only humans know.

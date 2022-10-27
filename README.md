@@ -1,6 +1,6 @@
 # **[简体中文](./README_ZH.md) | English**
 
-This repository is related to the [video about principles of neural networks](https://www.bilibili.com/video/BV1fd4y1y7xS/), which demonstrates how to write a simple neural network and implement handwritten digit recognition without using a framework.
+This repository is related to the [video about principles of neural networks](https://www.bilibili.com/video/BV1fd4y1y7xS/?p=2), which demonstrates how to write a simple neural network and implement handwritten digit recognition without using a framework.
 
 The neural network has a single hidden layer, and one output, you can change some arguments in the [config file](./usps/config.py) to adjust the settings for model training/simplification/preview detection
 
