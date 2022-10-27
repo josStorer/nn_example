@@ -30,7 +30,7 @@ def run():
     ]) / normalization
 
     network = nn(3 * 3, 9)
-    network.train(data, data_annotation_target, "weights.json")
+    network.train(data, data_annotation_target, "./weights.json")
 
     network.read_from_file("weights.json")
     for i, _ in enumerate(data):
