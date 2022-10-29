@@ -15,6 +15,8 @@ python cli.py -h
 
 ## 命令示例
 
+(注意配合科学上网, 否则可能无法拉取训练用的数据)
+
 ```shell
 python cli.py -h              # 获取帮助
 python cli.py -test           # 测试准确率
